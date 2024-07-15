@@ -1,0 +1,82 @@
+﻿@model IEnumerable<DataTableWebAPI.Models.DataItem>
+@using DataTableWebAPI.Models
+@{
+    var localizationService = (localizationService)HttpContext.Current.Application["LocalizationService"];
+    var culture = Request.Cookies["culture"]?.Value ?? "en";
+    ViewBag.Title = localizationService.GetValue("DataTableTitle", culture);
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@localizationService.GetValue("DataTableTitle", culture)</h2>
+
+<table id="dataTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>@localizationService.GetValue("Id", culture)</th>
+            <th>@localizationService.GetValue("Name", culture)</th>
+            <th>@localizationService.GetValue("Value", culture)</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th>@localizationService.GetValue("Id", culture)</th>
+            <th>@localizationService.GetValue("Name", culture)</th>
+            <th>@localizationService.GetValue("Value", culture)</th>
+        </tr>
+    </tfoot>
+</table>
+
+<!-- jQuery and DataTables scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("Document ready");
+        $('#dataTable').DataTable({
+            "ajax": {
+                "url": "/path/to/Data.json",
+                "dataSrc": "",
+                "error": function (xhr, error, thrown) {
+                    console.error("Error loading data: " + thrown);
+                    alert("Failed to load data.");
+                }
+            },
+            "columns": [
+                { "data": "Id" },
+                { "data": "Name" },
+                { "data": "Value" }
+            ],
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api();
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                var total = api.column(2).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+
+                var pageTotal = api.column(2, { page: 'current' }).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+
+                $(api.column(2).footer()).html(
+                    'Page total: ' + pageTotal + ' ( Total: ' + total + ' )'
+                );
+            }
+        });
+    });
+</script>

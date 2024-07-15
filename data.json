@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 1,
+    "Name": "Item 1",
+    "Value": 10
+  },
+  {
+    "Id": 2,
+    "Name": "Item 2",
+    "Value": 20
+  },
+  {
+    "Id": 3,
+    "Name": "Item 3",
+    "Value": 30
+  },
+  {
+    "Id": 4,
+    "Name": "Item 4",
+    "Value": 40
+  },
+  {
+    "Id": 5,
+    "Name": "Item 5",
+    "Value": 50
+  },
+  {
+    "Id": 6,
+    "Name": "Item 6",
+    "Value": 60
+  }
+]
